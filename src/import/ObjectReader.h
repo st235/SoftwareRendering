@@ -4,22 +4,16 @@
 #include "string"
 #include "vector"
 
-struct Vector3f {
-    float x;
-    float y;
-    float z;
-
-    Vector3f(float x, float y, float z);
-};
+#include "../geometry/Vectors.h"
 
 class ObjectReader {
 private:
     std::string _title;
-    std::vector<Vector3f> _points;
+    std::vector<geometry::Vector3f> _points;
     std::vector<std::vector<int>> _faces;
 
-    Vector3f _min;
-    Vector3f _max;
+    geometry::Vector3f _min;
+    geometry::Vector3f _max;
 
 public:
     explicit ObjectReader(std::string  title);
@@ -36,7 +30,7 @@ public:
 
     std::vector<int> getFaceAt(int index);
 
-    Vector3f getPointAt(int index);
+    geometry::Vector3f getPointAt(int index);
 
 };
 

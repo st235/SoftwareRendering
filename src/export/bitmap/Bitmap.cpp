@@ -124,19 +124,27 @@ uint8_t* Bitmap::getImageData() const {
     return _image_data;
 }
 
-void Bitmap::fillWithColor(const Color& color) {
+void Bitmap::clear(const Color& color) {
     for (int i = 0; i < _width; i++) {
         for (int j = 0; j < _height; j++) {
-            putPixelAt(i, j, color);
+            pixelAt(i, j, color);
         }
     }
 }
 
-void Bitmap::putPixelAt(uint32_t x, uint32_t y, const Color& color) {
+void Bitmap::pixelAt(uint32_t x, uint32_t y, const Color& color) {
+    if (!this->isPointWithinBoundaries(x, y)) {
+        return;
+    }
+
     uint32_t rawColor = color.getColor();
     _image_data[y * _width * BYTES_PER_PIXEL + x * BYTES_PER_PIXEL] = static_cast<uint8_t>(rawColor);
     _image_data[y * _width * BYTES_PER_PIXEL + x * BYTES_PER_PIXEL + 1] = static_cast<uint8_t>(rawColor >> 8U);
     _image_data[y * _width * BYTES_PER_PIXEL + x * BYTES_PER_PIXEL + 2] = static_cast<uint8_t>(rawColor >> 16U);
+}
+
+bool Bitmap::isPointWithinBoundaries(uint32_t x, uint32_t y) {
+    return x >= 0 && x < _width && y >= 0 && y < _height;
 }
 
 std::unique_ptr<Bitmap> Bitmap::create(std::string&& title, uint16_t width, uint16_t height) {

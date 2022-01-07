@@ -40,9 +40,11 @@ public:
 
     uint8_t* getImageData() const;
 
-    void fillWithColor(const Color& color);
+    void clear(const Color& color);
 
-    void putPixelAt(uint32_t x, uint32_t y, const Color& color);
+    void pixelAt(uint32_t x, uint32_t y, const Color& color);
+
+    bool isPointWithinBoundaries(uint32_t x, uint32_t y);
 
     ~Bitmap();
 

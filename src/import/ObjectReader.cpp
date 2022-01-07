@@ -28,9 +28,7 @@ namespace {
     }
 }
 
-Vector3f::Vector3f(float x, float y, float z) : x(x), y(y), z(z) {}
-
-ObjectReader::ObjectReader(std::string title): _title(std::move(title)), _min(Vector3f(9999, 9999, 9999)), _max(Vector3f(0, 0, 0)) {
+ObjectReader::ObjectReader(std::string title): _title(std::move(title)), _min(geometry::Vector3f(9999, 9999, 9999)), _max(geometry::Vector3f(0, 0, 0)) {
     std::ifstream input_model(_title);
 
     std::string line;
@@ -58,7 +56,7 @@ ObjectReader::ObjectReader(std::string title): _title(std::move(title)), _min(Ve
             _max.y = std::max(_max.y, y);
             _max.z = std::max(_max.z, z);
 
-            this->_points.emplace_back(Vector3f(x, y, z));
+            this->_points.emplace_back(geometry::Vector3f(x, y, z));
         } else if (mode == "f") {
             std::string a, b, c;
 
@@ -105,6 +103,6 @@ std::vector<int> ObjectReader::getFaceAt(int i) {
     return this->_faces[i];
 }
 
-Vector3f ObjectReader::getPointAt(int index) {
+geometry::Vector3f ObjectReader::getPointAt(int index) {
     return this->_points[index];
 }
