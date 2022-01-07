@@ -2,8 +2,6 @@
 
 #include "../geometry/Vectors.h"
 
-#include "iostream"
-
 namespace rendering {
 
 /**

@@ -24,6 +24,8 @@ public:
 
     static std::unique_ptr<Color> create(uint8_t r, uint8_t g, uint8_t b);
 
+    static Color random();
+
     static Color RED;
     static Color GREEN;
     static Color BLUE;

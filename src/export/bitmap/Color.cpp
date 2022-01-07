@@ -25,6 +25,14 @@ std::unique_ptr<Color> Color::create(uint8_t r, uint8_t g, uint8_t b) {
     return std::make_unique<Color>(r, g, b);
 }
 
+Color Color::random() {
+    return {
+            static_cast<uint8_t>(std::rand() % 255),
+            static_cast<uint8_t>(std::rand() % 255),
+            static_cast<uint8_t>(std::rand() % 255)
+    };
+}
+
 uint32_t Color::getColor() const {
     return _color;
 }
