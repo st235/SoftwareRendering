@@ -1,64 +1,131 @@
 #ifndef SOFTWARERENDERER_VECTORS_H
 #define SOFTWARERENDERER_VECTORS_H
 
+#include <cmath>
+
 namespace geometry {
 
-struct Vector2i {
+template<class V>
+struct Vector2 {
 public:
-    int x;
-    int y;
+    V x;
+    V y;
+    
+    Vector2(V x, V y) : x(x), y(y) {
+    }
 
-    Vector2i(int x, int y);
-    Vector2i(const Vector2i& that);
-    Vector2i&  operator=(const Vector2i& that);
+    Vector2(const Vector2 &that) {
+        this->x = that.x;
+        this->y = that.y;
+    }
+
+    Vector2 &operator=(const Vector2 &that) {
+        if (this != &that) {
+            this->x = that.x;
+            this->y = that.y;
+        }
+
+        return *this;
+    }
+
+    Vector2 operator+(const Vector2 &that) const {
+        return { x + that.x, y + that.y };
+    }
+
+    Vector2 operator-(const Vector2 &that) const {
+        return { x - that.x, y - that.y };
+    }
+
+    Vector2 operator*(float val) const {
+        return { x * val, y * val };
+    }
+
+    Vector2 operator/(float val) const {
+        return { x / val, y / val };
+    }
+
+    V length() const {
+        return sqrt(x * x + y * y);
+    }
+
+    Vector2 normalize() const {
+        V length = this->length();
+        return { x / length, y / length };
+    }
+
+    V dotProduct(const Vector2 &that) const {
+        return sqrt(x * that.x + y * that.y);
+    }
+
 };
 
-struct Vector2f {
+template<typename V>
+struct Vector3 {
 public:
-    float x;
-    float y;
+    V x;
+    V y;
+    V z;
 
-    Vector2f(float x, float y);
-    Vector2f(const Vector2f& that);
-    Vector2f&  operator=(const Vector2f& that);
+    Vector3(V x, V y, V z): x(x), y(y), z(z) {
+        //empty on purpose
+    }
+    
+    Vector3(const Vector3& that) {
+        this->x = that.x;
+        this->y = that.y;
+        this->z = that.z;
+    }
+    
+    Vector3&  operator=(const Vector3& that) {
+        if (this != &that) {
+            this->x = that.x;
+            this->y = that.y;
+            this->z = that.z;
+        }
+
+        return *this;
+    }
+
+    Vector3 operator+(const Vector3 &that) const {
+        return { x + that.x, y + that.y, z + that.z };
+    }
+
+    Vector3 operator-(const Vector3 &that) const {
+        return { x - that.x, y - that.y, z - that.z };
+    }
+
+    Vector3 operator*(float val) const {
+        return { x * val, y * val, z * val };
+    }
+
+    Vector3 operator/(float val) const {
+        return { x / val, y / val, z / val };
+    }
+
+    Vector3 crossProduct(const Vector3 &that) const {
+        return {this->y * that.z - this->z * that.y, - (this->x * that.z - this->z * that.x), this->x * that.y - this->y * that.x };
+    }
+
+    V length() const {
+        return sqrt(x * x + y * y + z * z);
+    }
+
+    Vector3 normalize() const {
+        V length = this->length();
+        return { x / length, y / length, z / length };
+    }
+
+    V dotProduct(const Vector3 &that) const {
+        return sqrt(x * that.x + y * that.y + z * that.z);
+    }
+
 };
 
-struct Vector3i {
-public:
-    int x;
-    int y;
-    int z;
+using Vector2i = Vector2<int>;
+using Vector2f = Vector2<float>;
 
-    Vector3i(int x, int y, int z);
-    Vector3i(const Vector3i& that);
-    Vector3i&  operator=(const Vector3i& that);
-};
-
-struct Vector3f {
-public:
-    float x;
-    float y;
-    float z;
-
-    Vector3f(float x, float y, float z);
-    Vector3f(const Vector3f& that);
-    Vector3f&  operator=(const Vector3f& that);
-
-    Vector3f operator-(const Vector3f& that) const;
-    Vector3f operator+(const Vector3f& that) const;
-
-    Vector3f operator/(float val) const;
-    Vector3f operator*(float val) const;
-
-    Vector3f crossProduct(const Vector3f& that) const;
-
-    float length() const;
-
-    Vector3f normalize() const;
-
-    float dotProduct(const Vector3f& that) const;
-
-};
+using Vector3i = Vector3<int>;
+using Vector3f = Vector3<float>;
 
 } // namespace geometry
 

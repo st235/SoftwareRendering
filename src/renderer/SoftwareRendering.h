@@ -4,10 +4,7 @@
 #include "../export/bitmap/Bitmap.h"
 #include "../export/bitmap/Color.h"
 
-namespace geometry {
-struct Vector2i;
-struct Vector3f;
-} // namespace geometry
+#include "../geometry/Vectors.h"
 
 namespace rendering {
 

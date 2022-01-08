@@ -10,4 +10,4 @@ add_executable(SoftwareRenderer
         src/export/bitmap/Exporter.h
         src/export/bitmap/Exporter.cpp
         src/export/bitmap/Color.h
-        src/export/bitmap/Color.cpp src/renderer/SoftwareRendering.h src/renderer/SoftwareRendering.cpp src/import/ObjectReader.cpp src/import/ObjectReader.h src/geometry/Vectors.cpp src/geometry/Vectors.h)
+        src/export/bitmap/Color.cpp src/renderer/SoftwareRendering.h src/renderer/SoftwareRendering.cpp src/import/ObjectReader.cpp src/import/ObjectReader.h src/geometry/Vectors.h)
