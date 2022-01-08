@@ -14,6 +14,12 @@ int main() {
     tools::Bitmap scene("Scene", width, height);
     scene.clear(tools::Color::BLACK);
 
+    float* zbuffer = new float[width * height];
+
+    for (int i = 0; i < width * height; i++) {
+        zbuffer[i] = -std::numeric_limits<float>::max();
+    }
+
     ObjectReader reader("miata.obj");
 
 // mesh
@@ -26,10 +32,10 @@ int main() {
 //            geometry::Vector3f origin = reader.getPointAt(face[i] - 1);
 //            geometry::Vector3f finish = reader.getPointAt(face[(i + 1) % 3] - 1);
 //
-//            int x0 = (origin.x - reader.getOffsetX()) / reader.getWidth() * width;
-//            int y0 = (origin.y - reader.getOffsetY()) / reader.getHeight() * height / ratio;
-//            int x1 = (finish.x - reader.getOffsetX()) / reader.getWidth() * width;
-//            int y1 = (finish.y - reader.getOffsetY()) / reader.getHeight() * height / ratio;
+//            int x0 = (origin.x - reader.getMinX()) / reader.getWidth() * width;
+//            int y0 = (origin.y - reader.getMinY()) / reader.getHeight() * height / ratio;
+//            int x1 = (finish.x - reader.getMinX()) / reader.getWidth() * width;
+//            int y1 = (finish.y - reader.getMinY()) / reader.getHeight() * height / ratio;
 //
 //            rendering::line(x0, y0, x1, y1, scene, tools::Color::BLACK);
 //        }
@@ -38,25 +44,33 @@ int main() {
     for (int f = 0; f < reader.getFacesCount(); f++) {
         std::vector<int> face = reader.getFaceAt(f);
 
-        geometry::Vector2i screen[] {{0, 0}, {0, 0}, {0, 0} };
+        geometry::Vector3f screen[] {{0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
         geometry::Vector3f world[] {{0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 
         for (int i = 0; i < 3; i++) {
             geometry::Vector3f origin = reader.getPointAt(face[i] - 1);
 
-            int x0, y0;
+            float x, y, z;
 
             if (reader.getWidth() > reader.getHeight()) {
-                float ratio = reader.getHeight() / reader.getWidth();
-                x0 = (origin.x - reader.getOffsetX()) / reader.getWidth() * width;
-                y0 = (origin.y - reader.getOffsetY() - reader.getHeight() / 2) / reader.getHeight() * (width * ratio) + height / 2;
+                x = (origin.x - reader.getMinX()) / reader.getWidth() * width;
+
+                float yRatio = reader.getHeight() / reader.getWidth();
+                y = (origin.y - reader.getMinY() - reader.getHeight() / 2) / reader.getHeight() * (width * yRatio) + height / 2;
+
+                float zRatio = reader.getDepth() / reader.getWidth();
+                z = (origin.z - reader.getMinZ()) / reader.getDepth() * (width * zRatio);
             } else {
-                float ratio = reader.getWidth() / reader.getHeight();
-                y0 = (origin.y - reader.getOffsetY()) / reader.getHeight() * height;
-                x0 = (origin.x - reader.getOffsetX() - reader.getWidth() / 2) / reader.getWidth() * (height * ratio) + width / 2;
+                y = (origin.y - reader.getMinY()) / reader.getHeight() * height;
+
+                float xRatio = reader.getWidth() / reader.getHeight();
+                x = (origin.x - reader.getMinX() - reader.getWidth() / 2) / reader.getWidth() * (height * xRatio) + width / 2;
+
+                float zRatio = reader.getDepth() / reader.getHeight();
+                z = (origin.z - reader.getMinZ()) / reader.getDepth() * (height * zRatio);
             }
 
-            screen[i] = {x0, y0 };
+            screen[i] = { x, y, z };
             world[i] = origin;
         }
 
@@ -70,7 +84,7 @@ int main() {
         float intensity = light_direction.dotProduct(normal);
 
         if (intensity > 0) {
-            rendering::triangle(screen[0], screen[1], screen[2], scene,
+            rendering::triangle(screen[0], screen[1], screen[2], scene, zbuffer,
                                 tools::Color::rgb(intensity * 255, intensity * 255, intensity * 255));
         }
     }

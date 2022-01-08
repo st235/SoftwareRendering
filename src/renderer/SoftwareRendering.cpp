@@ -2,6 +2,24 @@
 
 #include "../geometry/Vectors.h"
 
+namespace {
+
+geometry::Vector3f GetBarycentric(geometry::Vector3f& a, geometry::Vector3f& b, geometry::Vector3f& c, geometry::Vector3f& p) {
+    geometry::Vector3f cross_product_vector =
+            geometry::Vector3f(b.x - a.x, c.x - a.x, a.x - p.x).crossProduct(geometry::Vector3f(b.y - a.y, c.y - a.y, a.y - p.y));
+
+    if (std::abs(cross_product_vector.z) < 1) {
+        return {-1, -1, -1 };
+    }
+
+    float u = cross_product_vector.x / cross_product_vector.z;
+    float v = cross_product_vector.y / cross_product_vector.z;
+
+    return {1 - v - u, u, v};
+}
+
+} // namespace
+
 namespace rendering {
 
 /**
@@ -54,27 +72,14 @@ void line(const geometry::Vector2i& start, const geometry::Vector2i& finish, too
     line(start.x, start.y, finish.x, finish.y, bitmap, color);
 }
 
-geometry::Vector3f toBarycentric(geometry::Vector2i& a, geometry::Vector2i& b, geometry::Vector2i& c, geometry::Vector2i& p) {
-    geometry::Vector3f cross_product_vector = geometry::Vector3f(b.x - a.x, c.x - a.x, a.x - p.x).crossProduct(geometry::Vector3f(b.y - a.y, c.y - a.y, a.y - p.y));
-
-    if (std::abs(cross_product_vector.z) < 1) {
-        return {-1, -1, -1 };
-    }
-
-    float u = cross_product_vector.x / cross_product_vector.z;
-    float v = cross_product_vector.y / cross_product_vector.z;
-
-    return {1 - v - u, u, v};
-}
-
 /**
  * Barycentric algorithm
  */
-void triangle(geometry::Vector2i& v0, geometry::Vector2i& v1, geometry::Vector2i& v2, tools::Bitmap& bitmap, const tools::Color& color) {
-    geometry::Vector2i min(bitmap.getWidth() - 1, bitmap.getHeight() - 1);
-    geometry::Vector2i max(0, 0);
+void triangle(geometry::Vector3f& v0, geometry::Vector3f& v1, geometry::Vector3f& v2, tools::Bitmap& bitmap, float* zbuffer, const tools::Color& color) {
+    geometry::Vector2f min(bitmap.getWidth() - 1, bitmap.getHeight() - 1);
+    geometry::Vector2f max(0, 0);
 
-    geometry::Vector2i points[] { v0, v1, v2 };
+    geometry::Vector3f points[] { v0, v1, v2 };
 
     for (const auto& point: points) {
         min.x = std::min(min.x, point.x);
@@ -84,17 +89,28 @@ void triangle(geometry::Vector2i& v0, geometry::Vector2i& v1, geometry::Vector2i
         max.y = std::max(max.y, point.y);
     }
 
-    for (auto x = min.x; x <= max.x; x += 1) {
-        for (auto y = min.y; y <= max.y; y += 1) {
-            geometry::Vector2i point(x, y);
+    for (int x = min.x; x <= max.x; x += 1) {
+        for (int y = min.y; y <= max.y; y += 1) {
+            geometry::Vector3f point(x, y, 0);
 
-            geometry::Vector3f barycentric_coordinates = toBarycentric(v0, v1, v2, point);
+            geometry::Vector3f barycentric_coordinates = GetBarycentric(v0, v1, v2, point);
 
             if (barycentric_coordinates.x < 0 || barycentric_coordinates.y < 0 || barycentric_coordinates.z < 0) {
                 continue;
             }
 
-            bitmap.pixelAt(x, y, color);
+            float z = 0;
+
+            z += barycentric_coordinates.x * v0.z;
+            z += barycentric_coordinates.y * v1.z;
+            z += barycentric_coordinates.z * v2.z;
+
+            int index = int(x + y * bitmap.getWidth());
+
+            if (zbuffer[index] < z) {
+                zbuffer[index] = z;
+                bitmap.pixelAt(int(x), int(y), color);
+            }
         }
     }
 }
@@ -116,11 +132,11 @@ void triangle_legacy(geometry::Vector2i& v0, geometry::Vector2i& v1, geometry::V
         int x0 = float(y - v0.y) / float(part_height) * (v1.x - v0.x) + v0.x;
         int x1 = float(y - v0.y) / float(full_height) * (v2.x - v0.x) + v0.x;
 
-        bitmap.pixelAt(x0, y, tools::Color::RED);
-        bitmap.pixelAt(x1, y, tools::Color::GREEN);
+        bitmap.pixelAt(x0, y, color);
+        bitmap.pixelAt(x1, y, color);
 
         for (int x = std::min(x0, x1); x <= std::max(x0, x1); x++) {
-            bitmap.pixelAt(x, y, tools::Color::WHITE);
+            bitmap.pixelAt(x, y, color);
         }
     }
 
@@ -130,11 +146,11 @@ void triangle_legacy(geometry::Vector2i& v0, geometry::Vector2i& v1, geometry::V
         int x0 = float(y - v1.y) / float(part_height) * (v2.x - v1.x) + v1.x;
         int x1 = float(y - v0.y) / float(full_height) * (v2.x - v0.x) + v0.x;
 
-        bitmap.pixelAt(x0, y, tools::Color::RED);
-        bitmap.pixelAt(x1, y, tools::Color::GREEN);
+        bitmap.pixelAt(x0, y, color);
+        bitmap.pixelAt(x1, y, color);
 
         for (int x = std::min(x0, x1); x <= std::max(x0, x1); x++) {
-            bitmap.pixelAt(x, y, tools::Color::WHITE);
+            bitmap.pixelAt(x, y, color);
         }
     }
 }

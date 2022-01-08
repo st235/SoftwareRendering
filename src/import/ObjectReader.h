@@ -20,11 +20,15 @@ public:
 
     float getWidth();
 
-    float getOffsetX();
+    float getMinX();
 
     float getHeight();
 
-    float getOffsetY();
+    float getMinY();
+
+    float getDepth();
+
+    float getMinZ();
 
     int getFacesCount();
 

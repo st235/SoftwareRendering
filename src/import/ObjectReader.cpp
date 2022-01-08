@@ -87,7 +87,7 @@ float ObjectReader::getWidth() {
     return _max.x - _min.x;
 }
 
-float ObjectReader::getOffsetX() {
+float ObjectReader::getMinX() {
     return _min.x;
 }
 
@@ -95,8 +95,16 @@ float ObjectReader::getHeight() {
     return _max.y - _min.y;
 }
 
-float ObjectReader::getOffsetY() {
+float ObjectReader::getMinY() {
     return _min.y;
+}
+
+float ObjectReader::getDepth() {
+    return _max.z - _min.z;
+}
+
+float ObjectReader::getMinZ() {
+    return _min.z;
 }
 
 std::vector<int> ObjectReader::getFaceAt(int i) {
