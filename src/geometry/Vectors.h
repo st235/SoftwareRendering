@@ -44,7 +44,19 @@ public:
     Vector3f(const Vector3f& that);
     Vector3f&  operator=(const Vector3f& that);
 
-    Vector3f crossProduct(const Vector3f& that);
+    Vector3f operator-(const Vector3f& that) const;
+    Vector3f operator+(const Vector3f& that) const;
+
+    Vector3f operator/(float val) const;
+    Vector3f operator*(float val) const;
+
+    Vector3f crossProduct(const Vector3f& that) const;
+
+    float length() const;
+
+    Vector3f normalize() const;
+
+    float dotProduct(const Vector3f& that) const;
 
 };
 

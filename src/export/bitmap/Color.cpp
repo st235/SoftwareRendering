@@ -1,5 +1,7 @@
 #include "Color.h"
 
+#include <random>
+
 namespace tools {
 
 Color::Color(uint8_t r, uint8_t g, uint8_t b): _color((static_cast<uint32_t>(r) << 16U) | (static_cast<uint32_t>(g) << 8U) | (b)) {
@@ -21,8 +23,8 @@ Color & Color::operator=(Color&& color) noexcept {
     return *this;
 }
 
-std::unique_ptr<Color> Color::create(uint8_t r, uint8_t g, uint8_t b) {
-    return std::make_unique<Color>(r, g, b);
+Color Color::rgb(uint8_t r, uint8_t g, uint8_t b) {
+    return { r, g, b };
 }
 
 Color Color::random() {

@@ -2,7 +2,6 @@
 #define PSEUDO_RANDOM_GENERATOR_COLOR_H
 
 #include <cstdint>
-#include <memory>
 
 namespace tools {
 
@@ -22,7 +21,7 @@ public:
 
     uint32_t getColor() const;
 
-    static std::unique_ptr<Color> create(uint8_t r, uint8_t g, uint8_t b);
+    static Color rgb(uint8_t r, uint8_t g, uint8_t b);
 
     static Color random();
 

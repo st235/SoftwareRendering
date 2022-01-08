@@ -1,5 +1,7 @@
 #include "Vectors.h"
 
+#include <cmath>
+
 namespace geometry {
 
     Vector2i::Vector2i(int x, int y) : x(x), y(y) {
@@ -75,8 +77,37 @@ namespace geometry {
         return *this;
     }
 
-    Vector3f Vector3f::crossProduct(const Vector3f &that) {
+    Vector3f Vector3f::operator+(const Vector3f &that) const {
+        return { x + that.x, y + that.y, z + that.z };
+    }
+
+    Vector3f Vector3f::operator-(const Vector3f &that) const {
+        return { x - that.x, y - that.y, z - that.z };
+    }
+
+    Vector3f Vector3f::operator*(float val) const {
+        return { x * val, y * val, z * val };
+    }
+
+    Vector3f Vector3f::operator/(float val) const {
+        return { x / val, y / val, z / val };
+    }
+
+    Vector3f Vector3f::crossProduct(const Vector3f &that) const {
         return {this->y * that.z - this->z * that.y, - (this->x * that.z - this->z * that.x), this->x * that.y - this->y * that.x };
+    }
+
+    float Vector3f::length() const {
+        return sqrt(x * x + y * y + z * z);
+    }
+
+    Vector3f Vector3f::normalize() const {
+        float length = this->length();
+        return { x / length, y / length, z / length };
+    }
+
+    float Vector3f::dotProduct(const Vector3f &that) const {
+        return sqrt(x * that.x + y * that.y + z * that.z);
     }
 
 }
